@@ -92,6 +92,7 @@ class OnlineStoreTest extends BaseTest {
         OSPage.confirmOrderButton();
         LOGGER.info("Confirmation order button clicked");
     }
+
     @Test
     @DisplayName("Searching an item and adding to the shopping cart")
     public void testSearchAndAddItemToCart() {
@@ -153,6 +154,7 @@ class OnlineStoreTest extends BaseTest {
         LOGGER.info("Expected product size: {}", expectedSize);
         LOGGER.info("Actual product size: {}", actualSize);
     }
+
     @Test
     @DisplayName("Increase number of items at the shopping cart")
     public void testIncreaseNumberOfItemsAtCart() {
@@ -184,7 +186,7 @@ class OnlineStoreTest extends BaseTest {
         OSPage.cartConfirmationSizeButtonClick();
         LOGGER.info("Confirmation size button clicked");
 
-        //Increase number of items
+        //Increase number of items from 1 to 2
         OSPage.increaseNumberOfItems();
         LOGGER.info("Item count increased");
 
@@ -195,6 +197,74 @@ class OnlineStoreTest extends BaseTest {
         LOGGER.info("Expected product count: {}", expectedProductCount);
         LOGGER.info("Actual product count: {}", actualProductCount);
     }
+
+    @Test
+    @DisplayName("Decrease of items at the shopping cart")
+    public void testDecreaseNumberOfItemsAtShoppingCart() {
+        LOGGER.info("testDecreaseNumberOfItemsAtShoppingCart");
+
+        // Accept cookies
+        OSPage.acceptCookies();
+        LOGGER.info("Cookies accepted");
+
+        //Open the first item
+        boolean isFirstItemClickable = OSPage.checkIfFirstItemIsClickable();
+        assertTrue(isFirstItemClickable, "First Item is not clickable");
+        OSPage.firstItemClick();
+        LOGGER.info("First item clicked");
+
+        // Choose a size
+        OSPage.sizeNameClick();
+        LOGGER.info("Size name clicked");
+
+        // Add item to cart
+        boolean isAddToCartButtonClickable = OSPage.checkIfAddToCartButtonIsClickable();
+        assertTrue(isAddToCartButtonClickable, "Button is not clickable");
+        OSPage.addToCart();
+        LOGGER.info("Item added to cart");
+
+        //Close confirmation message
+        OSPage.closeCartConfirmation();
+        LOGGER.info("Cart confirmation message closed");
+
+        //Add second item to cart
+        OSPage.addToCart();
+        LOGGER.info("Second Item added to cart");
+
+        // Continue to checkout
+        OSPage.cartConfirmationSizeButtonClick();
+        LOGGER.info("Confirmation size button clicked");
+
+        // Check count of items in basket
+        int expectedProductCount = 2;
+        int actualProductCount = OSPage.getActualProductCount();
+        assertEquals(expectedProductCount, actualProductCount, "The item count in the basket does not match the expected item count.");
+        LOGGER.info("Expected product count: {}", expectedProductCount);
+        LOGGER.info("Actual product count: {}", actualProductCount);
+
+        // Verify product price
+        int expectedProductPrice = OSPage.expectedProductPrice();
+        int actualProductPrice = OSPage.actualProductPrice();
+        assertEquals(expectedProductPrice, actualProductPrice, "The item price in the basket does not match the expected item price.");
+        LOGGER.info("Expected product price: {}", expectedProductPrice);
+        LOGGER.info("Actual product price: {}", actualProductPrice);
+
+        //Decrease number of items from 2 to 1
+        OSPage.decreaseNumberOfItems();
+        LOGGER.info("Item count decreased from 2 to 1");
+
+        // Check count of items in basket
+        assertEquals(expectedProductCount, actualProductCount, "The item count in the basket does not match the expected item count.");
+        LOGGER.info("Expected product count: {}", expectedProductCount);
+        LOGGER.info("Actual product count: {}", actualProductCount);
+
+        // Verify product price
+        assertEquals(expectedProductPrice, actualProductPrice, "The item price in the basket does not match the expected item price.");
+        LOGGER.info("Expected product price: {}", expectedProductPrice);
+        LOGGER.info("Actual product price: {}", actualProductPrice);
+
+    }
+
 
     @Test
     @DisplayName("Empty shopping cart by quantity reducing")

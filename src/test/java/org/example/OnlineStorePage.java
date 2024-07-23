@@ -81,8 +81,14 @@ public class OnlineStorePage {
     @FindBy(css = "#categoryProducts > article:nth-child(2)")
     private WebElement searchedItem;
 
+    @FindBy(css = "div[data-testid='cart-confirmation-close']")
+    private WebElement cartConfirmationCloseButton;
+
     @FindBy(css = "li[data-selen='product-count-option'][data-event-key='2']")
     private WebElement expectedPostIncreaseProductCount;
+
+    @FindBy(css = "li[data-selen='product-count-option'][data-event-key='1']")
+    private WebElement expectedPostDecreaseProductCount;
 
     @FindBy(css = "li[data-selen='product-count-option-remove'][data-event-key='remove']")
     private WebElement expectedPostEmptyProductCount;
@@ -108,11 +114,6 @@ public class OnlineStorePage {
         firstItem.click();
     }
 
-    public int actualProductPrice() {
-        String actualProductPriceText = actualProductPrice.getText();
-        String actualProductExtractedPriceText = actualProductPriceText.replace("CZK", "").trim().replace("\u00A0", "");
-        return Integer.parseInt(actualProductExtractedPriceText);
-    }
 
     public void sizeNameClick() {
         sizeName.click();
@@ -157,16 +158,21 @@ public class OnlineStorePage {
         cartConfirmationProductSizeButton.click();
     }
 
+    public int expectedProductPrice() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("p[data-selen='final-price']")));
+        String expectedProductPriceText = expectedProductPrice.getText().replace("CZK", "").trim().replaceAll("[^\\d]", "");
+        return Integer.parseInt(expectedProductPriceText);
+    }
+
+    public int actualProductPrice() {
+        String actualProductPriceText = actualProductPrice.getText().replace("CZK", "").trim().replaceAll("[^\\d]", "");
+        return Integer.parseInt(actualProductPriceText);
+    }
+
     public int getActualProductCount() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[data-selen='product-count'].fancy-qty-select__QtyButton-z1g0i4-0")));
         String actualProductCountText = actualProductCountInDropDown.getText().trim();
         return Integer.parseInt(actualProductCountText);
-    }
-
-    public int expectedProductPrice() {
-        String expectedProductPriceText = expectedProductPrice.getText();
-        String expectedProductExtractedPriceText = expectedProductPriceText.replace("CZK", "").trim().replace("\u00A0", "");
-        return Integer.parseInt(expectedProductExtractedPriceText);
     }
 
     public boolean checkIfButtonInBasketIsClickable() {
@@ -213,6 +219,12 @@ public class OnlineStorePage {
         wait.until(ExpectedConditions.textToBePresentInElement(
                 actualProductCountInDropDown, "2"));
     }
+    public void decreaseNumberOfItems() {
+        actualProductCountInDropDown.click();
+        expectedPostDecreaseProductCount.click();
+        wait.until(ExpectedConditions.textToBePresentInElement(
+                actualProductCountInDropDown, "1"));
+    }
 
     public void emptyShoppingCart() {
         actualProductCountInDropDown.click();
@@ -222,6 +234,10 @@ public class OnlineStorePage {
         WebElement messageElement = wait.until(ExpectedConditions.visibilityOf(emptyCartMessage));
         String actualText = messageElement.getText().trim();
         return true;
+    }
+
+    public void closeCartConfirmation(){
+        cartConfirmationCloseButton.click();
     }
 
 
